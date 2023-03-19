@@ -1,0 +1,37 @@
+C51 COMPILER V9.54   YANSHI                                                                03/19/2023 23:34:41 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE YANSHI
+OBJECT MODULE PLACED IN .\Objects\YanShi.obj
+COMPILER INVOKED BY: E:\D\51\keil51\Keil5 C51\keil51\C51\BIN\C51.EXE YanShi.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEN
+                    -D PRINT(.\Listings\YanShi.lst) OBJECT(.\Objects\YanShi.obj)
+
+line level    source
+
+   1          #include "YanShi.h"
+   2          
+   3          void Delay10ms()                //@12.000MHz
+   4          {
+   5   1              unsigned char i, j;
+   6   1      
+   7   1              i = 117;
+   8   1              j = 184;
+   9   1              do
+  10   1              {
+  11   2                      while (--j);
+  12   2              } while (--i);
+  13   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =      9    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,35 @@
+C51 COMPILER V9.54   DSQ                                                                   03/19/2023 23:34:41 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE DSQ
+OBJECT MODULE PLACED IN .\Objects\DSQ.obj
+COMPILER INVOKED BY: E:\D\51\keil51\Keil5 C51\keil51\C51\BIN\C51.EXE DSQ.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND P
+                    -RINT(.\Listings\DSQ.lst) OBJECT(.\Objects\DSQ.obj)
+
+line level    source
+
+   1          #include "DSQ.h"
+   2          
+   3          void DSQ_2_Init(){
+   4   1              AUXR |= 0x04;           //定时器时钟1T模式
+   5   1              T2L = 0x20;             //设置定时初值
+   6   1              T2H = 0xD1;             //设置定时初值
+   7   1              AUXR |= 0x10;           //定时器2开始计时
+   8   1              AUXR=AUXR&0xf7;
+   9   1              IE2=IE2|0x04;
+  10   1              EA=1;
+  11   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     21    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

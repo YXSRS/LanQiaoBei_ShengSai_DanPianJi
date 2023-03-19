@@ -1,0 +1,334 @@
+C51 COMPILER V9.54   MAIN                                                                  03/20/2023 00:07:42 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: E:\D\51\keil51\Keil5 C51\keil51\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND 
+                    -PRINT(.\Listings\main.lst) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include "main.h"
+   2          
+   3          uchar ShiZhong_SheZhi=0;//时钟设置。0：时钟显示；1：时；2：分；3：秒
+   4          uchar NaoZhong_SheZhi=0;//闹钟设置。0：时钟显示；1：时；2：分；3：秒
+   5          uchar key_num;
+   6          char ShiZhong_Shi,ShiZhong_Fen,ShiZhong_Miao;
+   7          char NaoZhong_Shi=-1;
+   8          char NaoZhong_Fen=-1;
+   9          char NaoZhong_Miao=-1;
+  10          char NaoZhong_Shi_temp,NaoZhong_Fen_temp,NaoZhong_Miao_temp;
+  11          uint DanYuan_time=0;
+  12          char wen_du;
+  13          uchar TiShi_flag=0;//提示。0：提示关闭；1：提示开启。
+  14          uint TiShi_time=0;
+  15          
+  16          unsigned char DLKey_GetKeynum(){
+  17   1              unsigned char Key_num=0;
+  18   1              if(P30==0){
+  19   2                      Delay10ms();
+  20   2                      if(P30==0){
+  21   3                              Key_num=7;
+  22   3                      }
+  23   2                      while(P30==0);
+  24   2              }
+  25   1              else if(P31==0){
+  26   2                      Delay10ms();
+  27   2                      if(P31==0){
+  28   3                              Key_num=6;
+  29   3                      }
+  30   2                      while(P31==0);
+  31   2              }
+  32   1              else if(P32==0){
+  33   2                      Delay10ms();
+  34   2                      if(P32==0){
+  35   3                              Key_num=5;
+  36   3                      }
+  37   2                      while(P32==0);
+  38   2              }
+  39   1              else if(P33==0){
+  40   2                      Delay10ms();
+  41   2                      if(P33==0){
+  42   3                              Key_num=4;
+  43   3                      }
+  44   2                      if(ShiZhong_SheZhi>0||NaoZhong_SheZhi>0){
+  45   3                              while(P33==0);
+  46   3                      }
+  47   2              }
+  48   1              DLKey_Init();
+  49   1              return Key_num;
+  50   1      }
+  51          
+  52          void main(){
+  53   1              Init_BZ();
+  54   1              SMG_Init();
+C51 COMPILER V9.54   MAIN                                                                  03/20/2023 00:07:42 PAGE 2   
+
+  55   1              DLKey_Init();
+  56   1              DSQ_2_Init();
+  57   1              Ds1302_XieData(23,59,50);
+  58   1              DS18B20_GetWenDu();
+  59   1              while(1){
+  60   2                      key_num=DLKey_GetKeynum();
+  61   2                      if(key_num==7){
+  62   3                              TiShi_flag=0;
+  63   3                              if(NaoZhong_SheZhi==0){
+  64   4                                      ShiZhong_SheZhi++;
+  65   4                                      ShiZhong_SheZhi=ShiZhong_SheZhi%4;
+  66   4                                      if(ShiZhong_SheZhi==0){
+  67   5                                              Ds1302_XieData(ShiZhong_Shi,ShiZhong_Fen,ShiZhong_Miao);
+  68   5                                      }
+  69   4                              }
+  70   3                      }
+  71   2                      else if(key_num==6){
+  72   3                              TiShi_flag=0;
+  73   3                              if(ShiZhong_SheZhi==0){
+  74   4                                      NaoZhong_SheZhi++;
+  75   4                                      NaoZhong_SheZhi=NaoZhong_SheZhi%4;
+  76   4                                      if(NaoZhong_SheZhi==0){
+  77   5                                              NaoZhong_Shi=NaoZhong_Shi_temp;
+  78   5                                              NaoZhong_Fen=NaoZhong_Fen_temp;
+  79   5                                              NaoZhong_Miao=NaoZhong_Miao_temp;
+  80   5                                      }
+  81   4                                      else if(NaoZhong_SheZhi==1){
+  82   5                                              NaoZhong_Shi_temp=ShiZhong_Shi;
+  83   5                                              NaoZhong_Fen_temp=ShiZhong_Fen;
+  84   5                                              NaoZhong_Miao_temp=ShiZhong_Miao;
+  85   5                                              
+  86   5                                      }
+  87   4                              }
+  88   3                      }
+  89   2                      else if(key_num==5){
+  90   3                              TiShi_flag=0;
+  91   3                              if(ShiZhong_SheZhi>0){
+  92   4                                      switch(ShiZhong_SheZhi){
+  93   5                                              case 1:{
+  94   6                                                      ShiZhong_Shi++;
+  95   6                                                      if(ShiZhong_Shi>=23){
+  96   7                                                              ShiZhong_Shi=23;
+  97   7                                                      }
+  98   6                                                      break;
+  99   6                                              }
+ 100   5                                              case 2:{
+ 101   6                                                      ShiZhong_Fen++;
+ 102   6                                                      if(ShiZhong_Fen>=59){
+ 103   7                                                              ShiZhong_Fen=59;
+ 104   7                                                      }
+ 105   6                                                      break;
+ 106   6                                              }
+ 107   5                                              case 3:{
+ 108   6                                                      ShiZhong_Miao++;
+ 109   6                                                      if(ShiZhong_Miao>=59){
+ 110   7                                                              ShiZhong_Miao=59;
+ 111   7                                                      }
+ 112   6                                                      break;
+ 113   6                                              }
+ 114   5                                      }
+ 115   4                              }
+ 116   3                              else if(NaoZhong_SheZhi>0){
+C51 COMPILER V9.54   MAIN                                                                  03/20/2023 00:07:42 PAGE 3   
+
+ 117   4                                      switch(NaoZhong_SheZhi){
+ 118   5                                              case 1:{
+ 119   6                                                      NaoZhong_Shi_temp++;
+ 120   6                                                      if(NaoZhong_Shi_temp>=23){
+ 121   7                                                              NaoZhong_Shi_temp=23;
+ 122   7                                                      }
+ 123   6                                                      break;
+ 124   6                                              }
+ 125   5                                              case 2:{
+ 126   6                                                      NaoZhong_Fen_temp++;
+ 127   6                                                      if(NaoZhong_Fen_temp>=59){
+ 128   7                                                              NaoZhong_Fen_temp=59;
+ 129   7                                                      }
+ 130   6                                                      break;
+ 131   6                                              }
+ 132   5                                              case 3:{
+ 133   6                                                      NaoZhong_Miao_temp++;
+ 134   6                                                      if(NaoZhong_Miao_temp>=59){
+ 135   7                                                              NaoZhong_Miao_temp=59;
+ 136   7                                                      }
+ 137   6                                                      break;
+ 138   6                                              }
+ 139   5                                      }
+ 140   4                              }
+ 141   3                      }
+ 142   2                      else if(key_num==4){
+ 143   3                              TiShi_flag=0;
+ 144   3                              if(ShiZhong_SheZhi>0){
+ 145   4                                      switch(ShiZhong_SheZhi){
+ 146   5                                              case 1:{
+ 147   6                                                      ShiZhong_Shi--;
+ 148   6                                                      if(ShiZhong_Shi<=0){
+ 149   7                                                              ShiZhong_Shi=0;
+ 150   7                                                      }
+ 151   6                                                      break;
+ 152   6                                              }
+ 153   5                                              case 2:{
+ 154   6                                                      ShiZhong_Fen--;
+ 155   6                                                      if(ShiZhong_Fen<=0){
+ 156   7                                                              ShiZhong_Fen=0;
+ 157   7                                                      }
+ 158   6                                                      break;
+ 159   6                                              }
+ 160   5                                              case 3:{
+ 161   6                                                      ShiZhong_Miao--;
+ 162   6                                                      if(ShiZhong_Miao<=0){
+ 163   7                                                              ShiZhong_Miao=0;
+ 164   7                                                      }
+ 165   6                                                      break;
+ 166   6                                              }
+ 167   5                                      }
+ 168   4                              }
+ 169   3                              else if(NaoZhong_SheZhi>0){
+ 170   4                                      switch(NaoZhong_SheZhi){
+ 171   5                                              case 1:{
+ 172   6                                                      NaoZhong_Shi_temp--;
+ 173   6                                                      if(NaoZhong_Shi_temp<=0){
+ 174   7                                                              NaoZhong_Shi_temp=0;
+ 175   7                                                      }
+ 176   6                                                      break;
+ 177   6                                              }
+ 178   5                                              case 2:{
+C51 COMPILER V9.54   MAIN                                                                  03/20/2023 00:07:42 PAGE 4   
+
+ 179   6                                                      NaoZhong_Fen_temp--;
+ 180   6                                                      if(NaoZhong_Fen_temp<=0){
+ 181   7                                                              NaoZhong_Fen_temp=0;
+ 182   7                                                      }
+ 183   6                                                      break;
+ 184   6                                              }
+ 185   5                                              case 3:{
+ 186   6                                                      NaoZhong_Miao_temp--;
+ 187   6                                                      if(NaoZhong_Miao_temp<=0){
+ 188   7                                                              NaoZhong_Miao_temp=0;
+ 189   7                                                      }
+ 190   6                                                      break;
+ 191   6                                              }
+ 192   5                                              
+ 193   5                                      }
+ 194   4                              }
+ 195   3                              else{
+ 196   4                                      wen_du=(char)DS18B20_GetWenDu();
+ 197   4                              }
+ 198   3                      }
+ 199   2                      
+ 200   2                      if(ShiZhong_SheZhi==0&&NaoZhong_SheZhi==0){
+ 201   3                              ShiZhong_Shi=Ds1302_GetShi();
+ 202   3                              ShiZhong_Fen=Ds1302_GetFen();
+ 203   3                              ShiZhong_Miao=Ds1302_GetMiao();
+ 204   3                      }
+ 205   2                      
+ 206   2                      if(ShiZhong_Shi==NaoZhong_Shi&&ShiZhong_Fen==NaoZhong_Fen&&ShiZhong_Miao==NaoZhong_Miao){
+ 207   3                              TiShi_flag=1;
+ 208   3                              TiShi_time=0;
+ 209   3                      }
+ 210   2              }
+ 211   1      }
+ 212          
+ 213          void DSQ_2_ZD() interrupt 12{
+ 214   1              if(key_num!=4&&ShiZhong_SheZhi==0&&NaoZhong_SheZhi==0){
+ 215   2                      SMG_Show(ShiZhong_Shi/10,ShiZhong_Shi%10,17,ShiZhong_Fen/10,ShiZhong_Fen%10,17,ShiZhong_Miao/10,ShiZhong
+             -_Miao%10);
+ 216   2              }
+ 217   1              else if(ShiZhong_SheZhi>0||NaoZhong_SheZhi>0){
+ 218   2                      DanYuan_time++;
+ 219   2                      if(DanYuan_time>=2000){
+ 220   3                              DanYuan_time=0;
+ 221   3                      }
+ 222   2                      if(DanYuan_time>=0&&DanYuan_time<=1000){
+ 223   3                              if(ShiZhong_SheZhi>0){
+ 224   4                                      SMG_Show(ShiZhong_Shi/10,ShiZhong_Shi%10,17,ShiZhong_Fen/10,ShiZhong_Fen%10,17,ShiZhong_Miao/10,ShiZho
+             -ng_Miao%10);
+ 225   4                              }
+ 226   3                              if(NaoZhong_SheZhi>0){
+ 227   4                                      SMG_Show(NaoZhong_Shi_temp/10,NaoZhong_Shi_temp%10,17,NaoZhong_Fen_temp/10,NaoZhong_Fen_temp%10,17,Nao
+             -Zhong_Miao_temp/10,NaoZhong_Miao_temp%10);
+ 228   4                              }
+ 229   3                      }
+ 230   2                      else if(DanYuan_time>1000){
+ 231   3                              switch(ShiZhong_SheZhi){
+ 232   4                                      case 1:{
+ 233   5                                              SMG_Show(16,16,17,ShiZhong_Fen/10,ShiZhong_Fen%10,17,ShiZhong_Miao/10,ShiZhong_Miao%10);
+ 234   5                                              break;
+ 235   5                                      }
+ 236   4                                      case 2:{
+ 237   5                                              SMG_Show(ShiZhong_Shi/10,ShiZhong_Shi%10,17,16,16,17,ShiZhong_Miao/10,ShiZhong_Miao%10);
+C51 COMPILER V9.54   MAIN                                                                  03/20/2023 00:07:42 PAGE 5   
+
+ 238   5                                              break;
+ 239   5                                      }
+ 240   4                                      case 3:{
+ 241   5                                              SMG_Show(ShiZhong_Shi/10,ShiZhong_Shi%10,17,ShiZhong_Fen/10,ShiZhong_Fen%10,17,16,16);
+ 242   5                                              break;
+ 243   5                                      }
+ 244   4                              }
+ 245   3                              switch(NaoZhong_SheZhi){
+ 246   4                                      case 1:{
+ 247   5                                              SMG_Show(16,16,17,NaoZhong_Fen_temp/10,NaoZhong_Fen_temp%10,17,NaoZhong_Miao_temp/10,NaoZhong_Miao_te
+             -mp%10);
+ 248   5                                              break;
+ 249   5                                      }
+ 250   4                                      case 2:{
+ 251   5                                              SMG_Show(NaoZhong_Shi_temp/10,NaoZhong_Shi_temp%10,17,16,16,17,NaoZhong_Miao_temp/10,NaoZhong_Miao_te
+             -mp%10);
+ 252   5                                              break;
+ 253   5                                      }
+ 254   4                                      case 3:{
+ 255   5                                              SMG_Show(NaoZhong_Shi_temp/10,NaoZhong_Shi_temp%10,17,NaoZhong_Fen_temp/10,NaoZhong_Fen_temp%10,17,16
+             -,16);
+ 256   5                                              break;
+ 257   5                                      }
+ 258   4                              }
+ 259   3                      }
+ 260   2              }
+ 261   1              else if(key_num==4&&ShiZhong_SheZhi==0&&NaoZhong_SheZhi==0){
+ 262   2                      if(wen_du>=10){
+ 263   3                              SMG_Show(16,16,16,16,16,wen_du/10,wen_du%10,12);
+ 264   3                      }
+ 265   2                      else if(wen_du>=0){
+ 266   3                              SMG_Show(16,16,16,16,16,16,wen_du,12);
+ 267   3                      }
+ 268   2                      else if(wen_du<0){
+ 269   3                              SMG_Show(16,16,16,16,16,17,wen_du,12);
+ 270   3                      }
+ 271   2              }
+ 272   1              
+ 273   1              if(TiShi_flag){
+ 274   2                      TiShi_time++;
+ 275   2                      if(TiShi_time>=5000){
+ 276   3                              TiShi_time=0;
+ 277   3                              TiShi_flag=0;
+ 278   3                      }
+ 279   2              }
+ 280   1              LED_Show();
+ 281   1      }
+ 282          
+ 283          void LED_Show(){
+ 284   1              uchar L1=0xff;
+ 285   1              if((TiShi_time%400)<200){
+ 286   2                      L1=0xff;
+ 287   2              }
+ 288   1              else{
+ 289   2                      L1=0xfe;
+ 290   2              }
+ 291   1              P0=L1;
+ 292   1              P2=(P2&0x1f)|0x80;
+ 293   1              P2=(P2&0x1f)|0x00;
+ 294   1      }
+
+
+C51 COMPILER V9.54   MAIN                                                                  03/20/2023 00:07:42 PAGE 6   
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   1885    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     18       1
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
