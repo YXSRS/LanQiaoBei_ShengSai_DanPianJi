@@ -1,0 +1,11 @@
+".\Objects\STARTUP.obj",
+".\Objects\main.obj",
+".\Objects\Init.obj",
+".\Objects\SMG.obj",
+".\Objects\DSQ.obj",
+".\Objects\YanShi.obj",
+".\Objects\DLKey.obj",
+".\Objects\iic.obj",
+".\Objects\PWM.obj" 
+TO ".\Objects\2" 
+PRINT(".\Listings\2.m51") RAMSIZE(256) 
