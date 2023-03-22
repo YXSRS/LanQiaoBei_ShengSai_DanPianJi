@@ -1,0 +1,151 @@
+C51 COMPILER V9.54   MAIN                                                                  03/22/2023 22:27:52 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: E:\D\51\keil51\Keil5 C51\keil51\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND 
+                    -PRINT(.\Listings\main.lst) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include "main.h"
+   2          
+   3          uint Hz;
+   4          uint Hz_time=0;
+   5          uchar key_num;
+   6          uchar XianShi_JieMian=0;//显示界面。0：电压测量；1：频率测量
+   7          uchar ShuChu_MoShi=0;//输出模式。0：2V：1：RB2
+   8          uchar LED_GongNeng=1;//LED功能。1：LED功能启用；0：LED功能禁用
+   9          uchar SMG_XianShi_GongNeng=1;//数码管显示功能。1：数码管显示功能启用。0：数码管显示功能禁用。
+  10          uchar RB2_data;
+  11          uint RB2_DianYa;
+  12          uchar RB2_time;
+  13          uchar DAC_data;
+  14          
+  15          void main(){
+  16   1              Init_BZ();
+  17   1              SMG_Init();
+  18   1              DSQ_2_Init();
+  19   1              DLKey_Init();
+  20   1              LN555_DSQ_0_Init();
+  21   1              while(1){
+  22   2                      key_num=DLKey_GetKeynum();
+  23   2                      if(key_num==4){
+  24   3                              XianShi_JieMian++;
+  25   3                              XianShi_JieMian=XianShi_JieMian%2;
+  26   3                      }
+  27   2                      else if(key_num==5){
+  28   3                              ShuChu_MoShi++;
+  29   3                              ShuChu_MoShi=ShuChu_MoShi%2;
+  30   3                      }
+  31   2                      else if(key_num==6){
+  32   3                              LED_GongNeng++;
+  33   3                              LED_GongNeng=LED_GongNeng%2;
+  34   3                      }
+  35   2                      else if(key_num==7){
+  36   3                              SMG_XianShi_GongNeng++;
+  37   3                              SMG_XianShi_GongNeng=SMG_XianShi_GongNeng%2;
+  38   3                      }
+  39   2                      
+  40   2                      if(RB2_time>=20){
+  41   3                              RB2_time=0;
+  42   3                              RB2_data=IIC_ADC_GetData(3);
+  43   3                              RB2_DianYa=(uint)(RB2_data*1.0*(500.0/255.0));
+  44   3                      }
+  45   2                      
+  46   2                      if(ShuChu_MoShi){
+  47   3                              IIC_DAC_XieData(RB2_data);
+  48   3                      }
+  49   2                      else{
+  50   3                              IIC_DAC_XieData(101);
+  51   3                      }
+  52   2              }
+  53   1      }
+  54          
+C51 COMPILER V9.54   MAIN                                                                  03/22/2023 22:27:52 PAGE 2   
+
+  55          void DSQ_2_ZD() interrupt 12{
+  56   1              RB2_time++;
+  57   1              
+  58   1              Hz_time++;
+  59   1              if(Hz_time>=1000){
+  60   2                      Hz_time=0;
+  61   2                      Hz=((uint)TH0<<8)|(uint)TL0;
+  62   2                      TH0=0;
+  63   2                      TL0=0;
+  64   2              }
+  65   1              
+  66   1              if(SMG_XianShi_GongNeng){
+  67   2                      if(XianShi_JieMian){
+  68   3                              if(Hz>=100000){
+  69   4                                      SMG_Show(15,16,Hz/100000,(Hz/10000)%10,(Hz/1000)%10,(Hz/100)%10,(Hz/10)%10,Hz%10);
+  70   4                              }
+  71   3                              else if(Hz>=10000){
+  72   4                                      SMG_Show(15,16,16,Hz/10000,(Hz/1000)%10,(Hz/100)%10,(Hz/10)%10,Hz%10);
+  73   4                              }
+  74   3                              else if(Hz>=1000){
+  75   4                                      SMG_Show(15,16,16,16,Hz/1000,(Hz/100)%10,(Hz/10)%10,Hz%10);
+  76   4                              }
+  77   3                              else if(Hz>=100){
+  78   4                                      SMG_Show(15,16,16,16,16,Hz/100,(Hz/10)%10,Hz%10);
+  79   4                              }
+  80   3                              else if(Hz>=10){
+  81   4                                      SMG_Show(15,16,16,16,16,16,Hz/10,Hz%10);
+  82   4                              }
+  83   3                              else if(Hz>=0){
+  84   4                                      SMG_Show(15,16,16,16,16,16,16,Hz);
+  85   4                              }
+  86   3                      }
+  87   2                      else{
+  88   3                              SMG_Show(25,16,16,16,16,(RB2_DianYa/100)+32,(RB2_DianYa/10)%10,RB2_DianYa%10);
+  89   3                      }
+  90   2              }
+  91   1              else{
+  92   2                      SMG_Show(16,16,16,16,16,16,16,16);
+  93   2              }
+  94   1              
+  95   1              LED_Show();
+  96   1      }
+  97          
+  98          void LED_Show(){
+  99   1              uchar L1_2=0xff;
+ 100   1              uchar L3=0xff;
+ 101   1              uchar L4=0xff;
+ 102   1              uchar L5=0xff;
+ 103   1              if(LED_GongNeng){
+ 104   2                      if(XianShi_JieMian){
+ 105   3                              L1_2=0xfd;
+ 106   3                      }
+ 107   2                      else{
+ 108   3                              L1_2=0xfe;
+ 109   3                      }
+ 110   2                      if((RB2_DianYa>=150&&RB2_DianYa<=250)||(RB2_DianYa>=350)){
+ 111   3                              L3=0xfb;
+ 112   3                      }
+ 113   2                      if((Hz>=1000&&Hz<5000)||(Hz>=10000)){
+ 114   3                              L4=0xf7;
+ 115   3                      }
+ 116   2                      if(ShuChu_MoShi){
+C51 COMPILER V9.54   MAIN                                                                  03/22/2023 22:27:52 PAGE 3   
+
+ 117   3                              L5=0xef;
+ 118   3                      }
+ 119   2              }
+ 120   1              P0=L1_2&L3&L4;
+ 121   1              P2=(P2&0x1f)|0x80;
+ 122   1              P2=(P2&0x1f)|0x00;
+ 123   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   1073    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     14    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

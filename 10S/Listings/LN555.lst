@@ -1,0 +1,33 @@
+C51 COMPILER V9.54   LN555                                                                 03/22/2023 22:20:24 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE LN555
+OBJECT MODULE PLACED IN .\Objects\LN555.obj
+COMPILER INVOKED BY: E:\D\51\keil51\Keil5 C51\keil51\C51\BIN\C51.EXE LN555.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND
+                    - PRINT(.\Listings\LN555.lst) OBJECT(.\Objects\LN555.obj)
+
+line level    source
+
+   1          #include "LN555.h"
+   2          
+   3          void LN555_DSQ_0_Init(){
+   4   1              TMOD=(TMOD&0xf0)|0x05;
+   5   1              TH0=0;
+   6   1              TL0=0;
+   7   1              ET0=0;
+   8   1              TR0=1;
+   9   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     18    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
