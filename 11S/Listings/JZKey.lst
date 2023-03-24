@@ -1,0 +1,186 @@
+C51 COMPILER V9.54   JZKEY                                                                 03/23/2023 22:39:56 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE JZKEY
+OBJECT MODULE PLACED IN .\Objects\JZKey.obj
+COMPILER INVOKED BY: E:\D\51\keil51\Keil5 C51\keil51\C51\BIN\C51.EXE JZKey.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND
+                    - PRINT(.\Listings\JZKey.lst) OBJECT(.\Objects\JZKey.obj)
+
+line level    source
+
+   1          #include "JZKey.h"
+   2          
+   3          void JZKey_Init(){
+   4   1              P30=1;
+   5   1              P31=1;
+   6   1              P32=1;
+   7   1              P33=1;
+   8   1              P34=0;
+   9   1              P35=0;
+  10   1              P42=0;
+  11   1              P44=0;
+  12   1      }
+  13          
+  14          unsigned char JZKey_GetKeynum(){
+  15   1              unsigned char key_num=0;
+  16   1              if(P30==0){
+  17   2                      P30=0;
+  18   2                      P34=1;
+  19   2                      P35=1;
+  20   2                      P42=1;
+  21   2                      P44=1;
+  22   2                      if(P34==0){
+  23   3                              Delay10ms();
+  24   3                              if(P34==0){
+  25   4                                      key_num=19;
+  26   4                              }
+  27   3                              while(P34==0);
+  28   3                      }
+  29   2                      else if(P35==0){
+  30   3                              Delay10ms();
+  31   3                              if(P35==0){
+  32   4                                      key_num=15;
+  33   4                              }
+  34   3                              while(P35==0);
+  35   3                      }
+  36   2                      else if(P42==0){
+  37   3                              Delay10ms();
+  38   3                              if(P42==0){
+  39   4                                      key_num=11;
+  40   4                              }
+  41   3                              while(P42==0);
+  42   3                      }
+  43   2                      else if(P44==0){
+  44   3                              Delay10ms();
+  45   3                              if(P44==0){
+  46   4                                      key_num=7;
+  47   4                              }
+  48   3                              while(P44==0);
+  49   3                      }
+  50   2              }
+  51   1              else if(P31==0){
+  52   2                      P31=0;
+  53   2                      P34=1;
+  54   2                      P35=1;
+C51 COMPILER V9.54   JZKEY                                                                 03/23/2023 22:39:56 PAGE 2   
+
+  55   2                      P42=1;
+  56   2                      P44=1;
+  57   2                      if(P34==0){
+  58   3                              Delay10ms();
+  59   3                              if(P34==0){
+  60   4                                      key_num=18;
+  61   4                              }
+  62   3                              while(P34==0);
+  63   3                      }
+  64   2                      else if(P35==0){
+  65   3                              Delay10ms();
+  66   3                              if(P35==0){
+  67   4                                      key_num=14;
+  68   4                              }
+  69   3                              while(P35==0);
+  70   3                      }
+  71   2                      else if(P42==0){
+  72   3                              Delay10ms();
+  73   3                              if(P42==0){
+  74   4                                      key_num=10;
+  75   4                              }
+  76   3                              while(P42==0);
+  77   3                      }
+  78   2                      else if(P44==0){
+  79   3                              Delay10ms();
+  80   3                              if(P44==0){
+  81   4                                      key_num=6;
+  82   4                              }
+  83   3                              while(P44==0);
+  84   3                      }
+  85   2              }
+  86   1              else if(P32==0){
+  87   2                      P32=0;
+  88   2                      P34=1;
+  89   2                      P35=1;
+  90   2                      P42=1;
+  91   2                      P44=1;
+  92   2                      if(P34==0){
+  93   3                              Delay10ms();
+  94   3                              if(P34==0){
+  95   4                                      key_num=17;
+  96   4                              }
+  97   3                              while(P34==0);
+  98   3                      }
+  99   2                      else if(P35==0){
+ 100   3                              Delay10ms();
+ 101   3                              if(P35==0){
+ 102   4                                      key_num=13;
+ 103   4                              }
+ 104   3                              while(P35==0);
+ 105   3                      }
+ 106   2                      else if(P42==0){
+ 107   3                              Delay10ms();
+ 108   3                              if(P42==0){
+ 109   4                                      key_num=9;
+ 110   4                              }
+ 111   3                              while(P42==0);
+ 112   3                      }
+ 113   2                      else if(P44==0){
+ 114   3                              Delay10ms();
+ 115   3                              if(P44==0){
+ 116   4                                      key_num=5;
+C51 COMPILER V9.54   JZKEY                                                                 03/23/2023 22:39:56 PAGE 3   
+
+ 117   4                              }
+ 118   3                              while(P44==0);
+ 119   3                      }
+ 120   2              }
+ 121   1              else if(P33==0){
+ 122   2                      P33=0;
+ 123   2                      P34=1;
+ 124   2                      P35=1;
+ 125   2                      P42=1;
+ 126   2                      P44=1;
+ 127   2                      if(P34==0){
+ 128   3                              Delay10ms();
+ 129   3                              if(P34==0){
+ 130   4                                      key_num=16;
+ 131   4                              }
+ 132   3                              while(P34==0);
+ 133   3                      }
+ 134   2                      else if(P35==0){
+ 135   3                              Delay10ms();
+ 136   3                              if(P35==0){
+ 137   4                                      key_num=12;
+ 138   4                              }
+ 139   3                              while(P35==0);
+ 140   3                      }
+ 141   2                      else if(P42==0){
+ 142   3                              Delay10ms();
+ 143   3                              if(P42==0){
+ 144   4                                      key_num=8;
+ 145   4                              }
+ 146   3                              while(P42==0);
+ 147   3                      }
+ 148   2                      else if(P44==0){
+ 149   3                              Delay10ms();
+ 150   3                              if(P44==0){
+ 151   4                                      key_num=4;
+ 152   4                              }
+ 153   3                              while(P44==0);
+ 154   3                      }
+ 155   2              }
+ 156   1              JZKey_Init();
+ 157   1              return key_num;
+ 158   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    381    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       1
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
