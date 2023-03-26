@@ -1,0 +1,166 @@
+C51 COMPILER V9.54   MAIN                                                                  03/26/2023 17:09:44 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: E:\D\51\keil51\Keil5 C51\keil51\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND 
+                    -PRINT(.\Listings\main.lst) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include "main.h"
+   2          
+   3          uchar key_num=0;
+   4          uchar key_num_old=0;
+   5          uchar JieMian=0;//界面。0：温度显示界面；1：参数设置界面；2：DAC输出界面
+   6          uchar MoShi=0;//模式。0：模式1；1：模式2
+   7          char CanShu=25;
+   8          uint WenDu;
+   9          uchar DAC_Data;
+  10          uint DAC_DianYa;
+  11          uchar time=0;
+  12          
+  13          void main(){
+  14   1              Init_BZ();
+  15   1              SMG_Init();
+  16   1              DSQ_2_Init();
+  17   1              JZKey_Init();
+  18   1              DS18B20_GetWenDu();
+  19   1              while(1){
+  20   2                      key_num_old=key_num;
+  21   2                      key_num=JZKey_GetKeynum();
+  22   2                      if(key_num_old!=key_num){
+  23   3                              if(key_num==4){
+  24   4                                      JieMian++;
+  25   4                                      JieMian=JieMian%3;
+  26   4                              }
+  27   3                              else if(key_num==5){
+  28   4                                      MoShi++;
+  29   4                                      MoShi=MoShi%2;
+  30   4                              }
+  31   3                              else if(key_num==8&&JieMian==1){
+  32   4                                      CanShu--;
+  33   4                                      if(CanShu<-9){
+  34   5                                              CanShu=-9;
+  35   5                                      }
+  36   4                              }
+  37   3                              else if(key_num==9&&JieMian==1){
+  38   4                                      CanShu++;
+  39   4                                      if(CanShu>99){
+  40   5                                              CanShu=99;
+  41   5                                      }
+  42   4                              }
+  43   3                      }
+  44   2                      
+  45   2                      
+  46   2                      if(time>=20){
+  47   3                              time=0;
+  48   3                              WenDu=DS18B20_GetWenDu()*100;
+  49   3                      }
+  50   2                      
+  51   2                      if(MoShi){
+  52   3                              if(WenDu<2000){
+  53   4                                      IIC_DAC_XieData(51);
+  54   4                                      DAC_DianYa=100;
+C51 COMPILER V9.54   MAIN                                                                  03/26/2023 17:09:44 PAGE 2   
+
+  55   4                              }
+  56   3                              else if(WenDu>=2000&&WenDu<=4000){
+  57   4                                      DAC_DianYa=0.15*WenDu-200;
+  58   4                                      IIC_DAC_XieData(DAC_DianYa/100.0*51);
+  59   4                              }
+  60   3                              else if(WenDu>4000){
+  61   4                                      IIC_DAC_XieData(204);
+  62   4                                      DAC_DianYa=400;
+  63   4                              }
+  64   3                      }
+  65   2                      else{
+  66   3                              if(WenDu<CanShu*100){
+  67   4                                      IIC_DAC_XieData(0);
+  68   4                                      DAC_DianYa=0;
+  69   4                              }
+  70   3                              else{
+  71   4                                      IIC_DAC_XieData(255);
+  72   4                                      DAC_DianYa=500;
+  73   4                              }
+  74   3                      }
+  75   2              }
+  76   1      }
+  77          
+  78          void DSQ_2_ZD() interrupt 12{
+  79   1              time++;
+  80   1              
+  81   1              switch(JieMian){
+  82   2                      case 0:{
+  83   3                              if(WenDu>=1000){
+  84   4                                      SMG_Show(12,16,16,16,WenDu/1000,((WenDu/100)%10)+32,(WenDu/10)%10,WenDu%10);
+  85   4                              }
+  86   3                              else if(WenDu>=0){
+  87   4                                      SMG_Show(12,16,16,16,16,(WenDu/100)+32,(WenDu/10)%10,WenDu%10);
+  88   4                              }
+  89   3                              else if(WenDu<0){
+  90   4                                      SMG_Show(12,16,16,16,17,((WenDu/100)%10)+32,(WenDu/10)%10,WenDu%10);
+  91   4                              }
+  92   3                              break;
+  93   3                      }
+  94   2                      case 1:{
+  95   3                              if(CanShu>=10){
+  96   4                                      SMG_Show(24,16,16,16,16,16,CanShu/10,CanShu%10);
+  97   4                              }
+  98   3                              else if(CanShu>=0){
+  99   4                                      SMG_Show(24,16,16,16,16,16,16,CanShu);
+ 100   4                              }
+ 101   3                              else if(CanShu<0){
+ 102   4                                      SMG_Show(24,16,16,16,16,16,17,-CanShu);
+ 103   4                              }
+ 104   3                              break;
+ 105   3                      }
+ 106   2                      case 2:{
+ 107   3                              SMG_Show(10,16,16,16,16,(DAC_DianYa/100)+32,(DAC_DianYa/10)%10,DAC_DianYa%10);
+ 108   3                              break;
+ 109   3                      }
+ 110   2              }
+ 111   1              
+ 112   1              LED_Show();
+ 113   1      }
+ 114          
+ 115          void LED_Show(){
+ 116   1              uchar L1=0xff;
+C51 COMPILER V9.54   MAIN                                                                  03/26/2023 17:09:44 PAGE 3   
+
+ 117   1              uchar L2_3_4=0xff;
+ 118   1              if(MoShi==0){
+ 119   2                      L1=0xfe;
+ 120   2              }
+ 121   1              switch(JieMian){
+ 122   2                      case 0:{
+ 123   3                              L2_3_4=0xfd;
+ 124   3                              break;
+ 125   3                      }
+ 126   2                      case 1:{
+ 127   3                              L2_3_4=0xfb;
+ 128   3                              break;
+ 129   3                      }
+ 130   2                      case 2:{
+ 131   3                              L2_3_4=0xf7;
+ 132   3                              break;
+ 133   3                      }
+ 134   2              }
+ 135   1              P0=L1&L2_3_4;
+ 136   1              P2=(P2&0x1f)|0x80;
+ 137   1              P2=(P2&0x1f)|0x00;
+ 138   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   1011    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     11    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
