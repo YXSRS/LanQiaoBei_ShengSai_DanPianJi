@@ -1,0 +1,184 @@
+C51 COMPILER V9.54   MAIN                                                                  03/28/2023 17:58:08 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: E:\D\51\keil51\Keil5 C51\keil51\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND 
+                    -PRINT(.\Listings\main.lst) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include "main.h"
+   2          
+   3          uchar key_num;
+   4          uchar key_num_old;
+   5          uchar JieMian=0;
+   6          uchar MoShi=0;
+   7          int WenDu=0;
+   8          uchar shi;
+   9          uchar fen;
+  10          uchar miao;
+  11          uchar WenDu_CanShu=23;//温度参数
+  12          uchar L1_flag=0;//L1亮灭标志位
+  13          uint L1_time=0;
+  14          uchar JDQ=0;//继电器标志位
+  15          uchar L3_time_flag=0;
+  16          uchar L3_time=0;
+  17          uchar time=0;
+  18          
+  19          void main(){
+  20   1              Init_BZ();
+  21   1              SMG_Init();
+  22   1              DSQ_2_Init();
+  23   1              JZKey_Init();
+  24   1              DS18B20_GetWenDu();
+  25   1              Ds1302_XieData(23,59,50);
+  26   1              while(1){
+  27   2                      key_num_old=key_num;
+  28   2                      key_num=JZKey_GetKeynum();
+  29   2                      if(key_num_old!=key_num){
+  30   3                              if(key_num==12){
+  31   4                                      JieMian++;
+  32   4                                      JieMian=JieMian%3;
+  33   4                              }
+  34   3                              else if(key_num==13){
+  35   4                                      MoShi++;
+  36   4                                      MoShi=MoShi%2;
+  37   4                                      if(MoShi){
+  38   5                                              L3_time_flag=0;
+  39   5                                      }
+  40   4                              }
+  41   3                              else if(key_num==16&&JieMian==2){
+  42   4                                      WenDu_CanShu++;
+  43   4                                      if(WenDu_CanShu>=99){
+  44   5                                              WenDu_CanShu=99;
+  45   5                                      }
+  46   4                              }
+  47   3                              else if(key_num==17&&JieMian==2){
+  48   4                                      WenDu_CanShu--;
+  49   4                                      if(WenDu_CanShu<=10){
+  50   5                                              WenDu_CanShu=10;
+  51   5                                      }
+  52   4                              }
+  53   3                      }
+  54   2                      
+C51 COMPILER V9.54   MAIN                                                                  03/28/2023 17:58:08 PAGE 2   
+
+  55   2                      if(time>=10){
+  56   3                              time=0;
+  57   3                              WenDu=DS18B20_GetWenDu()*10;
+  58   3                              
+  59   3                              shi=Ds1302_GetShi();
+  60   3                              fen=Ds1302_GetFen();
+  61   3                              miao=Ds1302_GetMiao();
+  62   3                              if(fen==0&&miao==0){
+  63   4                                      L1_flag=1;
+  64   4                                      L1_time=0;
+  65   4                                      if(MoShi){
+  66   5                                              P0=0x10;
+  67   5                                              P2=(P2&0x1f)|0xa0;
+  68   5                                              P2=(P2&0x1f)|0x00;
+  69   5                                              L3_time_flag=1;
+  70   5                                      }
+  71   4                              }
+  72   3                              
+  73   3                              if(MoShi==0){
+  74   4                                      if(WenDu>WenDu_CanShu*10){
+  75   5                                              P0=0x10;
+  76   5                                              L3_time_flag=1;
+  77   5                                      }
+  78   4                                      else{
+  79   5                                              P0=0x00;
+  80   5                                              L3_time_flag=0;
+  81   5                                      }
+  82   4                                      P2=(P2&0x1f)|0xa0;
+  83   4                                      P2=(P2&0x1f)|0x00;
+  84   4                              }
+  85   3                      }
+  86   2              }
+  87   1      }
+  88          
+  89          void DSQ_2_ZD() interrupt 12{
+  90   1              time++;
+  91   1              
+  92   1              if(L1_flag){
+  93   2                      L1_time++;
+  94   2                      if(L1_time>=5000){
+  95   3                              L1_time=0;
+  96   3                              L1_flag=0;
+  97   3                              if(MoShi){
+  98   4                                      P0=0x00;
+  99   4                                      P2=(P2&0x1f)|0xa0;
+ 100   4                                      P2=(P2&0x1f)|0x00;
+ 101   4                                      L3_time_flag=0;
+ 102   4                                      L3_time=0;
+ 103   4                              }
+ 104   3                      }
+ 105   2              }
+ 106   1              
+ 107   1              if(L3_time_flag){
+ 108   2                      L3_time++;
+ 109   2                      if(L3_time>=200){
+ 110   3                              L3_time=0;
+ 111   3                      }
+ 112   2              }
+ 113   1              
+ 114   1              if(JieMian==0){
+ 115   2                      if(WenDu>=100){
+ 116   3                              SMG_Show(25,1,16,16,16,WenDu/100,((WenDu/10)%10)+32,WenDu%10);
+C51 COMPILER V9.54   MAIN                                                                  03/28/2023 17:58:08 PAGE 3   
+
+ 117   3                      }
+ 118   2                      else if(WenDu>=0){
+ 119   3                              SMG_Show(25,1,16,16,16,16,(WenDu/10)+32,WenDu%10);
+ 120   3                      }
+ 121   2                      else if(WenDu<0){
+ 122   3                              SMG_Show(25,1,16,16,16,17,(((-WenDu)/10)%10)+32,(-WenDu)%10);
+ 123   3                      }
+ 124   2              }
+ 125   1              else if(JieMian==1){
+ 126   2                      if(key_num==17){
+ 127   3                              SMG_Show(25,2,16,fen/10,fen%10,17,miao/10,miao%10);
+ 128   3                      }
+ 129   2                      else{
+ 130   3                              SMG_Show(25,2,16,shi/10,shi%10,17,fen/10,fen%10);
+ 131   3                      }
+ 132   2              }
+ 133   1              else if(JieMian==2){
+ 134   2                      SMG_Show(25,3,16,16,16,16,WenDu_CanShu/10,WenDu_CanShu%10);
+ 135   2              }
+ 136   1              
+ 137   1              LED_Show();
+ 138   1      }
+ 139          
+ 140          void LED_Show(){
+ 141   1              uchar L1=0xff;
+ 142   1              uchar L2=0xff;
+ 143   1              uchar L3=0xff;
+ 144   1              if(L1_flag){
+ 145   2                      L1=0xfe;
+ 146   2              }
+ 147   1              if(MoShi==0){
+ 148   2                      L2=0xfd;
+ 149   2              }
+ 150   1              if(L3_time_flag&&L3_time<=100){
+ 151   2                      L3=0xfb;
+ 152   2              }
+ 153   1              P0=L1&L2&L3;
+ 154   1              P2=(P2&0x1f)|0x80;
+ 155   1              P2=(P2&0x1f)|0x00;
+ 156   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    844    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     17    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
